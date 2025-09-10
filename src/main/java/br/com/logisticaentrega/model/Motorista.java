@@ -62,4 +62,15 @@ public class Motorista {
     public void setCidade_base(String cidade_base) {
         this.cidade_base = cidade_base;
     }
+
+    @Override
+    public String toString() {
+        return "=========================| Motorista |=========================\n" +
+                "ID: " + this.id +
+                "\nNome: " + this.nome +
+                "\nCNH: " + this.cnh +
+                "\nVeículo: " + this.veiculo +
+                "\nCidade base: " + this.cidade_base +"\n";
+
+    }
 }

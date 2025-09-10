@@ -76,4 +76,15 @@ public class Entrega {
     public void setStatus_entrega(StatusEntrega status_entrega) {
         this.status_entrega = status_entrega;
     }
+
+    @Override
+    public String toString() {
+        return "=========================| Entrega |=========================\n" +
+                "ID: " + this.id +
+                "\nPedido: " + this.pedido.getId() +
+                "\nMotorista: " + this.motorista.getId() +
+                "\nData de saída: " + this.data_saida +
+                "\nData de entrega: " + this.data_entrega +
+                "\nStatus da entrega: " + this.status_entrega + "\n";
+    }
 }

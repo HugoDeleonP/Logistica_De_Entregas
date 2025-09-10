@@ -1,5 +1,8 @@
 package br.com.logisticaentrega.view;
 
+import br.com.logisticaentrega.model.StatusPedido;
+
+import javax.swing.text.View;
 import java.util.Scanner;
 
 public class Viewer {
@@ -37,6 +40,102 @@ public class Viewer {
         input.nextLine();
 
         return escolha;
+    }
+
+    public String readNome(String titulo, String entidade){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.printf(" Digite o nome do %s: \n", entidade);
+        return input.nextLine();
+    }
+
+    public String readCpf_Cnpj(String titulo){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.println(" Digite o CPF/CNPJ: ");
+        return input.nextLine();
+    }
+
+    public String readEndereco(String titulo){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.println(" Digite o Endereço: ");
+        return input.nextLine();
+    }
+
+    public String readCidade(String titulo){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.println(" Digite a cidade: ");
+        return input.nextLine();
+    }
+
+    public String readEstado(String titulo){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.println(" Digite o estado: ");
+        return input.nextLine();
+    }
+
+    public String readCnh(String titulo){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.println(" Digite o CNH: ");
+        return input.nextLine();
+    }
+
+    public String readVeiculo(String titulo){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.println(" Digite o Veículo: ");
+        return input.nextLine();
+    }
+
+    public Integer readId(String titulo, String entidade){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.printf("Digite o ID do %s: ", entidade);
+        Integer id = input.nextInt();
+        input.nextLine();
+
+        return id;
+    }
+
+    public double readVolume(String titulo){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.println("Digite o Volume (m³): ");
+        double volume = input.nextDouble();
+        input.nextLine();
+
+        return volume;
+    }
+
+    public double readPeso(String titulo){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.println("Digite o Volume (m³): ");
+        double peso = input.nextDouble();
+        input.nextLine();
+
+        return peso;
+    }
+
+    public StatusPedido readStatus(String titulo){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.println("1- PENDENTE");
+        System.out.println("2- ENTREGUE");
+        System.out.println("3- CANCELADO");
+        int escolha = input.nextInt();
+        input.nextLine();
+
+        switch (escolha){
+            case 1 ->{
+                return StatusPedido.PENDENTE;
+            }
+
+            case 2 ->{
+                return StatusPedido.ENTREGUE;
+            }
+
+            case 3 ->{
+                return StatusPedido.CANCELADO;
+            }
+
+            default ->{
+                return null;
+            }
+        }
     }
 
 

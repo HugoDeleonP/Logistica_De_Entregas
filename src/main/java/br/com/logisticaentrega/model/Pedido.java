@@ -76,4 +76,15 @@ public class Pedido {
     public void setStatus_pedido(StatusPedido status_pedido) {
         this.status_pedido = status_pedido;
     }
+
+    @Override
+    public String toString() {
+        return "=========================| Pedido |=========================\n" +
+                "ID: " + this.id +
+                "\nCliente: " + this.cliente.getId() +
+                "\nData do pedido: " + this.data_pedido +
+                "\nVolume (m³): " + this.volume_m3 +
+                "\nPeso (Kg): " + this.peso_kg +
+                "\nStatus do pedido: " + this.status_pedido + "\n";
+    }
 }

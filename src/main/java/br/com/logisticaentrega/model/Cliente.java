@@ -75,6 +75,12 @@ public class Cliente {
     }
 
     public String toString() {
-        return super.toString();
+        return "=========================| Cliente |=========================\n" +
+                "ID: " + this.id +
+                "\nNome: " + this.nome +
+                "\nCPF/CNPJ: " + this.cpf_cnpj +
+                "\nEndereço: " + this.endereco +
+                "\nCidade: " + this.cidade +
+                "\nEstado: " + this.estado + "\n";
     }
 }
