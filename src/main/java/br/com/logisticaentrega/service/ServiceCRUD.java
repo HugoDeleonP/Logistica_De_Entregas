@@ -1,12 +1,14 @@
 package br.com.logisticaentrega.service;
 
 import br.com.logisticaentrega.dao.ClienteDao;
+import br.com.logisticaentrega.dao.EntregaDao;
 import br.com.logisticaentrega.dao.MotoristaDao;
 import br.com.logisticaentrega.dao.PedidoDao;
 import br.com.logisticaentrega.model.*;
 import br.com.logisticaentrega.view.Viewer;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,11 +44,11 @@ public class ServiceCRUD {
             }
 
             case 3 ->{
-                //cadastrarPedido();
+                cadastrarPedido();
             }
 
             case 4 ->{
-                //cadastrarEntrega();
+                cadastrarEntrega();
             }
 
             case 5 ->{
@@ -101,26 +103,110 @@ public class ServiceCRUD {
 
     private void cadastrarPedido(){
         var pedidoData = new PedidoDao();
-        listagem();
+
+        listagemCliente();
         Integer id = uiView.readId("Cadastrar pedido", "cliente");
+        var cliente = listagemId_cliente(id);
         double volume = uiView.readVolume("Cadastrar pedido");
         double peso = uiView.readPeso("Cadastrar pedido");
-        StatusPedido status = null;
+        StatusPedido statusEnum = uiView.readStatusPedido("Cadastrar pedido");
+        String status = statusEnum.toString();
 
-        do{
-             status = uiView.readStatus("Cadastrar pedido");
-        } while(status != null);
+        try{
+            pedidoData.insert(cliente, volume, peso, status);
+        } catch (SQLException e){
+            System.out.println("Conexão com banco de dados não realizada");
+            e.printStackTrace();
+        }
 
-        pedidoData.insert( volume, peso, status);
 
     }
 
-    private void listagem(){
+    private void listagemCliente(){
         var clienteData = new ClienteDao();
         var clientes = clienteData.select();
-        for (Cliente cliente: clientes){
-            System.out.println(cliente);
+
+        for (Cliente clienteUnit: clientes){
+            System.out.println(clienteUnit);
         }
+    }
+
+    public void listagemPedido(){
+        var pedidoData = new PedidoDao();
+        var pedidos = pedidoData.select();
+
+        for (Pedido pedidoUnit: pedidos){
+            System.out.println(pedidoUnit);
+        }
+    }
+
+    public void listagemMotorista(){
+        var motoristaData = new MotoristaDao();
+        var motoristas = motoristaData.select();
+
+        for(Motorista motoristaUnit: motoristas){
+            System.out.println(motoristaUnit);
+        }
+    }
+
+    public Cliente listagemId_cliente(Integer id){
+        var clienteData = new ClienteDao();
+        var clientes = clienteData.select();
+
+        for (Cliente clienteUnit: clientes){
+            if(clienteUnit.getId() == id){
+                return clienteUnit;
+            }
+        }
+
+        return null;
+    }
+
+    public Pedido listagemId_pedido(Integer id){
+        var pedidoData = new PedidoDao();
+        var pedidos = pedidoData.select();
+
+        for (Pedido pedidoUnit: pedidos){
+            if(pedidoUnit.getId() == id){
+                return pedidoUnit;
+            }
+        }
+
+        return null;
+    }
+
+    public Motorista listagemId_motorista(Integer id){
+        var motoristaData = new MotoristaDao();
+        var motoristas = motoristaData.select();
+
+        for(Motorista motoristaUnit: motoristas){
+            if(motoristaUnit.getId() == id){
+                return motoristaUnit;
+            }
+        }
+
+        return null;
+    }
+
+    private void cadastrarEntrega(){
+        var entregaData = new EntregaDao();
+        listagemPedido();
+        Integer pedido_id = uiView.readId("Cadastrar entrega", "pedido");
+        listagemMotorista();
+        Integer motorista_id = uiView.readId("Cadastrar entrega", "motorista");
+        LocalDateTime data_saida = uiView.readDateTime("Cadastrar entrega", "saída");
+        LocalDateTime data_entrega = uiView.readDateTime("Cadastrar entrega", "entrega");
+        StatusEntrega statusEnum = uiView.readStatusEntrega("Cadastrar entrega");
+        String status = statusEnum.toString();
+
+        Pedido pedido = listagemId_pedido(pedido_id);
+        Motorista motorista = listagemId_motorista(motorista_id);
+        try {
+            entregaData.insert(pedido, motorista, data_saida, data_entrega, status);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
     }
 
 }

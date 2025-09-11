@@ -10,9 +10,9 @@ public class Pedido {
     private LocalDateTime data_pedido;
     private double volume_m3;
     private double peso_kg;
-    private StatusPedido status_pedido;
+    private String status_pedido;
 
-    public Pedido(Integer id, Cliente cliente, LocalDateTime data_pedido, double volume_m3, double peso_kg, StatusPedido status_pedido) {
+    public Pedido(Integer id, Cliente cliente, LocalDateTime data_pedido, double volume_m3, double peso_kg, String status_pedido) {
         this.id = id;
         this.cliente = cliente;
         this.data_pedido = data_pedido;
@@ -21,7 +21,7 @@ public class Pedido {
         this.status_pedido = status_pedido;
     }
 
-    public Pedido(Cliente cliente, LocalDateTime data_pedido, double volume_m3, double peso_kg, StatusPedido status_pedido) {
+    public Pedido(Cliente cliente, LocalDateTime data_pedido, double volume_m3, double peso_kg, String status_pedido) {
         this.cliente = cliente;
         this.data_pedido = data_pedido;
         this.volume_m3 = volume_m3;
@@ -69,11 +69,11 @@ public class Pedido {
         this.peso_kg = peso_kg;
     }
 
-    public StatusPedido getStatus_pedido() {
+    public String getStatus_pedido() {
         return status_pedido;
     }
 
-    public void setStatus_pedido(StatusPedido status_pedido) {
+    public void setStatus_pedido(String status_pedido) {
         this.status_pedido = status_pedido;
     }
 

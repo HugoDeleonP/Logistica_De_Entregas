@@ -1,8 +1,14 @@
 package br.com.logisticaentrega.view;
 
+import br.com.logisticaentrega.model.StatusEntrega;
 import br.com.logisticaentrega.model.StatusPedido;
 
+import javax.swing.text.DateFormatter;
 import javax.swing.text.View;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Viewer {
@@ -104,14 +110,14 @@ public class Viewer {
 
     public double readPeso(String titulo){
         System.out.printf("=========================| %s |=========================\n", titulo);
-        System.out.println("Digite o Volume (m³): ");
+        System.out.println("Digite o Peso (Kg): ");
         double peso = input.nextDouble();
         input.nextLine();
 
         return peso;
     }
 
-    public StatusPedido readStatus(String titulo){
+    public StatusPedido readStatusPedido(String titulo){
         System.out.printf("=========================| %s |=========================\n", titulo);
         System.out.println("1- PENDENTE");
         System.out.println("2- ENTREGUE");
@@ -138,5 +144,53 @@ public class Viewer {
         }
     }
 
+    public LocalDateTime readDateTime(String titulo, String entidade){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.printf("Digite a data de %s (YYYY-MM-DD): \n", entidade);
+        String dateString = input.nextLine();
+        System.out.printf("Digite o horário de %s (hh:mm:ss): \n", entidade);
+        String timeString = input.nextLine();
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+
+        String dateTimeString = dateString + "T" + timeString;
+
+        return LocalDateTime.parse(dateTimeString);
+    }
+
+    public LocalDate readDate(String titulo, String entidade){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.printf("Digite a data de %s (YYYY-MM-DD): \n", entidade);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String dateString = input.nextLine();
+
+        return LocalDate.parse(dateString);
+    }
+
+    public StatusEntrega readStatusEntrega(String titulo){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.println("1- EM_ROTA");
+        System.out.println("2- ENTREGUE");
+        System.out.println("3- ATRASADA");
+        int escolha = input.nextInt();
+        input.nextLine();
+
+        switch (escolha){
+            case 1 ->{
+                return StatusEntrega.EM_ROTA;
+            }
+
+            case 2 ->{
+                return StatusEntrega.ENTREGUE;
+            }
+
+            case 3 ->{
+                return StatusEntrega.ATRASADA;
+            }
+
+            default ->{
+                return null;
+            }
+        }
+    }
 }
