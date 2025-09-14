@@ -55,11 +55,12 @@ public class ServiceCRUD {
             }
 
             case 6 ->{
-                //atualizarStatusEntrega();
+                atualizarStatusEntrega();
             }
 
             case 7 ->{
-                //listarCliente_Motorista();
+                listarCliente_Motorista();
+                //Listar Todas as Entregas com Cliente e Motorista
             }
         }
 
@@ -217,8 +218,7 @@ public class ServiceCRUD {
         Integer motorista_id = uiView.readId("Cadastrar entrega", "o motorista");
         LocalDateTime data_saida = uiView.readDateTime("Cadastrar entrega", "saída");
         LocalDateTime data_entrega = uiView.readDateTime("Cadastrar entrega", "entrega");
-        StatusEntrega statusEnum = uiView.readStatusEntrega("Cadastrar entrega");
-        String status = statusEnum.toString();
+        String status = StatusEntrega.EM_ROTA.toString();
 
         Pedido pedido = listagemId_pedido(pedido_id);
         Motorista motorista = listagemId_motorista(motorista_id);
@@ -245,5 +245,46 @@ public class ServiceCRUD {
             e.printStackTrace();
         }
 
+    }
+
+    private void atualizarStatusEntrega(){
+        var entregaData = new EntregaDao();
+
+        listagemEntrega();
+        Integer entrega_id = uiView.readId("Atualizar status de entrega", "a entrega");
+        StatusEntrega statusEnum = uiView.readStatusEntrega("Atualizar status de entrega");
+        String statusEntrega = statusEnum.toString();
+
+        try{
+            entregaData.updateStatus(entrega_id, statusEntrega);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private String clienteMotorista_toString(Entrega entrega, Cliente cliente, Motorista motorista){
+
+        return
+        "=========================| Pedido |=========================\n" +
+        "\nID: " + entrega.getId() +
+        "\nCliente: " + cliente.getNome() +
+        "\nMotorista: " + motorista.getNome() +
+        "\nData de saída: " + entrega.getData_saida() +
+        "\nData de entrega: " + entrega.getData_entrega() +
+        "\nStatus da entrega: " + entrega.getStatus_entrega() + "\n";
+    }
+
+    private void listarCliente_Motorista(){
+        var entregaData = new EntregaDao();
+        entregas = entregaData.selectCliente_motorista();
+
+        for(Entrega entrega: entregas){
+            Cliente cliente = entrega.getPedido().getCliente();
+            Motorista motorista = entrega.getMotorista();
+
+            System.out.println(clienteMotorista_toString(entrega, cliente, motorista));
+
+        }
     }
 }

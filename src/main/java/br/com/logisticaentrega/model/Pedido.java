@@ -29,6 +29,11 @@ public class Pedido {
         this.status_pedido = status_pedido;
     }
 
+    public Pedido(Integer id, Cliente cliente){
+        this.id = id;
+        this.cliente = cliente;
+    }
+
     public Pedido(Integer id){
         this.id = id;
     }

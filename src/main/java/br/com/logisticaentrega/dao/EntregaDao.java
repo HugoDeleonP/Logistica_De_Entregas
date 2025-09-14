@@ -1,9 +1,6 @@
 package br.com.logisticaentrega.dao;
 
-import br.com.logisticaentrega.model.Entrega;
-import br.com.logisticaentrega.model.Motorista;
-import br.com.logisticaentrega.model.Pedido;
-import br.com.logisticaentrega.model.StatusEntrega;
+import br.com.logisticaentrega.model.*;
 import br.com.logisticaentrega.service.ServiceCRUD;
 import br.com.logisticaentrega.util.Conexao;
 
@@ -44,7 +41,7 @@ public class EntregaDao{
 
     public List<Entrega> select(){
         String sql = """
-                select entrega.id as entrega_id, entrega.pedido_id, motorista.nome as motorista_nome, motorista.id as motorista_id,entrega.data_saida, entrega.data_entrega, entrega.status_entrega
+                select entrega.id as entrega_id, entrega.pedido_id, motorista.nome as motorista_nome, motorista.id as motorista_id, entrega.data_saida, entrega.data_entrega, entrega.status_entrega
                 from entrega
                 LEFT JOIN motorista ON entrega.motorista_id = motorista.id;
                 """;
@@ -76,5 +73,76 @@ public class EntregaDao{
         }
 
         return entregas;
+    }
+
+    public List<Entrega> selectCliente_motorista(){
+        String sql = """
+                select entrega.id as entrega_id,
+                cliente.nome as cliente_nome,
+                cliente.id as cliente_id,
+                motorista.nome as motorista_nome,
+                motorista.id as motorista_id,
+                pedido.id as pedido_id,
+                entrega.data_saida,
+                entrega.data_entrega,
+                entrega.status_entrega
+                from entrega
+                LEFT JOIN motorista ON entrega.motorista_id = motorista.id
+                LEFT JOIN pedido ON entrega.pedido_id = pedido.id
+                	LEFT JOIN cliente on pedido.cliente_id = cliente.id;
+                """;
+
+        List<Entrega> entregas = new ArrayList<>();
+
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()){
+                Integer entrega_id = rs.getInt("entrega_id");
+                String cliente_nome = rs.getString("cliente_nome");
+                String motorista_nome = rs.getString("motorista_nome");
+                LocalDateTime dataSaida = rs.getObject("data_saida", LocalDateTime.class);
+                LocalDateTime dataEntrega = rs.getObject("data_entrega", LocalDateTime.class);
+                String status_entrega = rs.getString("status_entrega");
+
+                Integer cliente_id = rs.getInt("cliente_id");
+                Integer motorista_id = rs.getInt("motorista_id");
+                Integer pedido_id = rs.getInt("pedido_id");
+
+                Cliente cliente = new Cliente(cliente_id, cliente_nome);
+                Motorista motorista = new Motorista(motorista_id, motorista_nome);
+                Pedido pedido = new Pedido(pedido_id, cliente);
+
+                Entrega entrega = new Entrega(entrega_id, pedido, motorista, dataSaida, dataEntrega, status_entrega);
+
+                entregas.add(entrega);
+            }
+
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        return entregas;
+    }
+
+    public void updateStatus(Integer id, String statusEntrega) throws SQLException{
+        String sql = """
+                UPDATE entrega
+                SET status_entrega = ?
+                WHERE id = ?;
+                """;
+
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            stmt.setInt(1, id);
+            stmt.setString(2, statusEntrega);
+
+            System.out.println("Status de entrega atualizado com sucesso!");
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 }

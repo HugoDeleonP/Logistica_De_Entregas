@@ -199,4 +199,8 @@ public class Viewer {
         System.out.printf(" Digite a descrição de %s: \n", entidade);
         return input.nextLine();
     }
+
+    public void selectClienteMotorista_entrega(){
+
+    }
 }
