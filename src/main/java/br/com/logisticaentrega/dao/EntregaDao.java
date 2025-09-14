@@ -44,8 +44,9 @@ public class EntregaDao{
 
     public List<Entrega> select(){
         String sql = """
-                SELECT id, pedido_id, motorista_id, data_saida, data_entrega, status_entrega
-                FROM historicoEntrega;
+                select entrega.id as entrega_id, entrega.pedido_id, motorista.nome as motorista_nome, motorista.id as motorista_id,entrega.data_saida, entrega.data_entrega, entrega.status_entrega
+                from entrega
+                LEFT JOIN motorista ON entrega.motorista_id = motorista.id;
                 """;
 
         List<Entrega> entregas = new ArrayList<>();
@@ -53,20 +54,19 @@ public class EntregaDao{
         try(Connection conn = Conexao.conectar();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            ServiceCRUD crud = new ServiceCRUD();
-
             ResultSet rs = stmt.executeQuery();
 
             while(rs.next()){
-                Integer id = rs.getInt("id");
+                Integer id = rs.getInt("entrega_id");
                 Integer pedido_id = rs.getInt("pedido_id");
+                String motorista_nome = rs.getString("motorista_nome");
                 Integer motorista_id = rs.getInt("motorista_id");
                 LocalDateTime data_saida = rs.getObject("data_saida", LocalDateTime.class);
                 LocalDateTime data_entrega = rs.getObject("data_entrega", LocalDateTime.class);
                 String status = rs.getString("status_entrega");
 
-                Pedido pedido = crud.listagemId_pedido(pedido_id);
-                Motorista motorista = crud.listagemId_motorista(motorista_id);
+                Pedido pedido = new Pedido(pedido_id);
+                Motorista motorista = new Motorista(motorista_id, motorista_nome);
 
                 var entrega = new Entrega(id, pedido, motorista, data_saida, data_entrega, status);
                 entregas.add(entrega);

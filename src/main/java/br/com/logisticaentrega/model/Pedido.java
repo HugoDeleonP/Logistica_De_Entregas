@@ -29,6 +29,10 @@ public class Pedido {
         this.status_pedido = status_pedido;
     }
 
+    public Pedido(Integer id){
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -81,7 +85,7 @@ public class Pedido {
     public String toString() {
         return "=========================| Pedido |=========================\n" +
                 "ID: " + this.id +
-                "\nCliente: " + this.cliente.getId() +
+                "\nCliente: " + this.cliente.getNome() +
                 "\nData do pedido: " + this.data_pedido +
                 "\nVolume (m³): " + this.volume_m3 +
                 "\nPeso (Kg): " + this.peso_kg +

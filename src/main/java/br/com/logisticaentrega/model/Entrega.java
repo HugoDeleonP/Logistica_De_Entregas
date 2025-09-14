@@ -82,7 +82,7 @@ public class Entrega {
         return "=========================| Entrega |=========================\n" +
                 "ID: " + this.id +
                 "\nPedido: " + this.pedido.getId() +
-                "\nMotorista: " + this.motorista.getId() +
+                "\nMotorista: " + this.motorista.getNome() +
                 "\nData de saída: " + this.data_saida +
                 "\nData de entrega: " + this.data_entrega +
                 "\nStatus da entrega: " + this.status_entrega + "\n";

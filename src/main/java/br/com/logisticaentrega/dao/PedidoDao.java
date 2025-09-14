@@ -43,8 +43,10 @@ public class PedidoDao{
 
     public List<Pedido> select(){
         String sql = """
-                SELECT id, cliente_id, data_pedido, volume_m3, peso_kg, status_pedido 
-                from pedido""";
+                select pedido.id as pedido_id, cliente.nome as cliente_nome, cliente.id as cliente_id, pedido.data_pedido, pedido.volume_m3, pedido.volume_m3, pedido.peso_kg, pedido.status_pedido
+                from pedido
+                LEFT JOIN cliente ON pedido.cliente_id = cliente.id;
+                """;
 
         List<Pedido> pedidos = new ArrayList<>();
 
@@ -54,15 +56,15 @@ public class PedidoDao{
             ResultSet rs = stmt.executeQuery();
 
             while(rs.next()){
-                Integer id = rs.getInt("id");
+                Integer id = rs.getInt("pedido_id");
+                String cliente_nome = rs.getString("cliente_nome");
                 Integer cliente_id = rs.getInt("cliente_id");
                 LocalDateTime data_pedido = rs.getObject("data_pedido", LocalDateTime.class);
                 double volume_m3 = rs.getDouble("volume_m3");
                 double peso_kg = rs.getDouble("peso_kg");
                 String status_pedido = rs.getString("status_pedido");
 
-                var service = new ServiceCRUD();
-                Cliente cliente = service.listagemId_cliente(cliente_id);
+                var cliente = new Cliente(cliente_id, cliente_nome);
 
                 var pedido = new Pedido(id, cliente, data_pedido, volume_m3, peso_kg, status_pedido);
                 pedidos.add(pedido);

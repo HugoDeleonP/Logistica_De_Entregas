@@ -20,6 +20,7 @@ public class ServiceCRUD {
     List<Pedido> pedidos;
 
     Viewer uiView;
+    ServiceRelatorio relatorio = new ServiceRelatorio();
 
     public ServiceCRUD(){
         clientes = new ArrayList<>();
@@ -131,7 +132,7 @@ public class ServiceCRUD {
         }
     }
 
-    public void listagemPedido(){
+    private void listagemPedido(){
         var pedidoData = new PedidoDao();
         var pedidos = pedidoData.select();
 
@@ -140,7 +141,7 @@ public class ServiceCRUD {
         }
     }
 
-    public void listagemMotorista(){
+    private void listagemMotorista(){
         var motoristaData = new MotoristaDao();
         var motoristas = motoristaData.select();
 
@@ -149,7 +150,7 @@ public class ServiceCRUD {
         }
     }
 
-    public Cliente listagemId_cliente(Integer id){
+    private Cliente listagemId_cliente(Integer id){
         var clienteData = new ClienteDao();
         var clientes = clienteData.select();
 
@@ -161,8 +162,7 @@ public class ServiceCRUD {
 
         return null;
     }
-
-    public Pedido listagemId_pedido(Integer id){
+    private Pedido listagemId_pedido(Integer id){
         var pedidoData = new PedidoDao();
         var pedidos = pedidoData.select();
 
@@ -175,7 +175,7 @@ public class ServiceCRUD {
         return null;
     }
 
-    public Motorista listagemId_motorista(Integer id){
+    private Motorista listagemId_motorista(Integer id){
         var motoristaData = new MotoristaDao();
         var motoristas = motoristaData.select();
 
@@ -208,5 +208,4 @@ public class ServiceCRUD {
         }
 
     }
-
 }
