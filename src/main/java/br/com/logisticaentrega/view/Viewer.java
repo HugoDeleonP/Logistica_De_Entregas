@@ -92,7 +92,7 @@ public class Viewer {
 
     public Integer readId(String titulo, String entidade){
         System.out.printf("=========================| %s |=========================\n", titulo);
-        System.out.printf("Digite o ID do %s: ", entidade);
+        System.out.printf(" Digite o ID d%s: ", entidade);
         Integer id = input.nextInt();
         input.nextLine();
 
@@ -101,7 +101,7 @@ public class Viewer {
 
     public double readVolume(String titulo){
         System.out.printf("=========================| %s |=========================\n", titulo);
-        System.out.println("Digite o Volume (m³): ");
+        System.out.println(" Digite o Volume (m³): ");
         double volume = input.nextDouble();
         input.nextLine();
 
@@ -110,7 +110,7 @@ public class Viewer {
 
     public double readPeso(String titulo){
         System.out.printf("=========================| %s |=========================\n", titulo);
-        System.out.println("Digite o Peso (Kg): ");
+        System.out.println(" Digite o Peso (Kg): ");
         double peso = input.nextDouble();
         input.nextLine();
 
@@ -119,9 +119,9 @@ public class Viewer {
 
     public StatusPedido readStatusPedido(String titulo){
         System.out.printf("=========================| %s |=========================\n", titulo);
-        System.out.println("1- PENDENTE");
-        System.out.println("2- ENTREGUE");
-        System.out.println("3- CANCELADO");
+        System.out.println(" 1- PENDENTE");
+        System.out.println(" 2- ENTREGUE");
+        System.out.println(" 3- CANCELADO");
         int escolha = input.nextInt();
         input.nextLine();
 
@@ -146,9 +146,9 @@ public class Viewer {
 
     public LocalDateTime readDateTime(String titulo, String entidade){
         System.out.printf("=========================| %s |=========================\n", titulo);
-        System.out.printf("Digite a data de %s (YYYY-MM-DD): \n", entidade);
+        System.out.printf(" Digite a data de %s (YYYY-MM-DD): \n", entidade);
         String dateString = input.nextLine();
-        System.out.printf("Digite o horário de %s (hh:mm:ss): \n", entidade);
+        System.out.printf(" Digite o horário de %s (hh:mm:ss): \n", entidade);
         String timeString = input.nextLine();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
@@ -160,7 +160,7 @@ public class Viewer {
 
     public LocalDate readDate(String titulo, String entidade){
         System.out.printf("=========================| %s |=========================\n", titulo);
-        System.out.printf("Digite a data de %s (YYYY-MM-DD): \n", entidade);
+        System.out.printf(" Digite a data de %s (YYYY-MM-DD): \n", entidade);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String dateString = input.nextLine();
 
@@ -169,9 +169,9 @@ public class Viewer {
 
     public StatusEntrega readStatusEntrega(String titulo){
         System.out.printf("=========================| %s |=========================\n", titulo);
-        System.out.println("1- EM_ROTA");
-        System.out.println("2- ENTREGUE");
-        System.out.println("3- ATRASADA");
+        System.out.println(" 1- EM_ROTA");
+        System.out.println(" 2- ENTREGUE");
+        System.out.println(" 3- ATRASADA");
         int escolha = input.nextInt();
         input.nextLine();
 
@@ -192,5 +192,11 @@ public class Viewer {
                 return null;
             }
         }
+    }
+
+    public String readDescricao(String titulo, String entidade){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.printf(" Digite a descrição de %s: \n", entidade);
+        return input.nextLine();
     }
 }

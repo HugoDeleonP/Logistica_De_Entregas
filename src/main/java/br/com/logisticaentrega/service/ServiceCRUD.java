@@ -1,13 +1,11 @@
 package br.com.logisticaentrega.service;
 
-import br.com.logisticaentrega.dao.ClienteDao;
-import br.com.logisticaentrega.dao.EntregaDao;
-import br.com.logisticaentrega.dao.MotoristaDao;
-import br.com.logisticaentrega.dao.PedidoDao;
+import br.com.logisticaentrega.dao.*;
 import br.com.logisticaentrega.model.*;
 import br.com.logisticaentrega.view.Viewer;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +51,7 @@ public class ServiceCRUD {
             }
 
             case 5 ->{
-                //cadastrarEventoHistorico();
+                cadastrarEventoHistorico();
             }
 
             case 6 ->{
@@ -106,7 +104,7 @@ public class ServiceCRUD {
         var pedidoData = new PedidoDao();
 
         listagemCliente();
-        Integer id = uiView.readId("Cadastrar pedido", "cliente");
+        Integer id = uiView.readId("Cadastrar pedido", "o cliente");
         var cliente = listagemId_cliente(id);
         double volume = uiView.readVolume("Cadastrar pedido");
         double peso = uiView.readPeso("Cadastrar pedido");
@@ -125,7 +123,7 @@ public class ServiceCRUD {
 
     private void listagemCliente(){
         var clienteData = new ClienteDao();
-        var clientes = clienteData.select();
+        clientes = clienteData.select();
 
         for (Cliente clienteUnit: clientes){
             System.out.println(clienteUnit);
@@ -134,7 +132,7 @@ public class ServiceCRUD {
 
     private void listagemPedido(){
         var pedidoData = new PedidoDao();
-        var pedidos = pedidoData.select();
+        pedidos = pedidoData.select();
 
         for (Pedido pedidoUnit: pedidos){
             System.out.println(pedidoUnit);
@@ -143,16 +141,26 @@ public class ServiceCRUD {
 
     private void listagemMotorista(){
         var motoristaData = new MotoristaDao();
-        var motoristas = motoristaData.select();
+        motoristas = motoristaData.select();
 
         for(Motorista motoristaUnit: motoristas){
             System.out.println(motoristaUnit);
         }
     }
 
+    private void listagemEntrega(){
+        var entregaData = new EntregaDao();
+        entregas = entregaData.select();
+
+        for(Entrega entregaUnit: entregas){
+            System.out.println(entregaUnit);
+        }
+    }
+
+
     private Cliente listagemId_cliente(Integer id){
         var clienteData = new ClienteDao();
-        var clientes = clienteData.select();
+        clientes = clienteData.select();
 
         for (Cliente clienteUnit: clientes){
             if(clienteUnit.getId() == id){
@@ -164,7 +172,7 @@ public class ServiceCRUD {
     }
     private Pedido listagemId_pedido(Integer id){
         var pedidoData = new PedidoDao();
-        var pedidos = pedidoData.select();
+        pedidos = pedidoData.select();
 
         for (Pedido pedidoUnit: pedidos){
             if(pedidoUnit.getId() == id){
@@ -177,7 +185,7 @@ public class ServiceCRUD {
 
     private Motorista listagemId_motorista(Integer id){
         var motoristaData = new MotoristaDao();
-        var motoristas = motoristaData.select();
+        motoristas = motoristaData.select();
 
         for(Motorista motoristaUnit: motoristas){
             if(motoristaUnit.getId() == id){
@@ -188,12 +196,25 @@ public class ServiceCRUD {
         return null;
     }
 
+    private Entrega listagemId_entrega(Integer id){
+        var entregaDao = new EntregaDao();
+        entregas = entregaDao.select();
+
+        for(Entrega entregaUnit: entregas){
+            if(entregaUnit.getId() == id){
+                return entregaUnit;
+            }
+        }
+
+        return null;
+    }
+
     private void cadastrarEntrega(){
         var entregaData = new EntregaDao();
         listagemPedido();
-        Integer pedido_id = uiView.readId("Cadastrar entrega", "pedido");
+        Integer pedido_id = uiView.readId("Cadastrar entrega", "o pedido");
         listagemMotorista();
-        Integer motorista_id = uiView.readId("Cadastrar entrega", "motorista");
+        Integer motorista_id = uiView.readId("Cadastrar entrega", "o motorista");
         LocalDateTime data_saida = uiView.readDateTime("Cadastrar entrega", "saída");
         LocalDateTime data_entrega = uiView.readDateTime("Cadastrar entrega", "entrega");
         StatusEntrega statusEnum = uiView.readStatusEntrega("Cadastrar entrega");
@@ -204,6 +225,23 @@ public class ServiceCRUD {
         try {
             entregaData.insert(pedido, motorista, data_saida, data_entrega, status);
         } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private void cadastrarEventoHistorico(){
+        var historicoEntregaData = new HistoricoEntregaDao();
+
+        listagemEntrega();
+        Integer entrega_id = uiView.readId("Cadastrar histórico de entrega", "a entrega");
+        String descricao = uiView.readDescricao("Cadastrar histórico de entrega", "evento da entrega");
+        Entrega entrega = listagemId_entrega(entrega_id);
+        LocalDateTime data_evento = entrega.getData_entrega();
+
+        try{
+            historicoEntregaData.insert(entrega, LocalDate.from(data_evento), descricao);
+        }catch(SQLException e){
             e.printStackTrace();
         }
 
