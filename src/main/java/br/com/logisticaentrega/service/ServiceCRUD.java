@@ -62,6 +62,26 @@ public class ServiceCRUD {
                 listarCliente_Motorista();
                 //Listar Todas as Entregas com Cliente e Motorista
             }
+
+            case 12 ->{
+                //buscarPedidoCpfCnpj();
+            }
+
+            case 13 ->{
+                //cancelarPedido();
+            }
+
+            case 14 ->{
+                //excluirEntrega();
+            }
+
+            case 15 ->{
+                //excluirCliente();
+            }
+
+            case 16 ->{
+                //excluirMotorista();
+            }
         }
 
     }
@@ -109,7 +129,7 @@ public class ServiceCRUD {
         var cliente = listagemId_cliente(id);
         double volume = uiView.readVolume("Cadastrar pedido");
         double peso = uiView.readPeso("Cadastrar pedido");
-        StatusPedido statusEnum = uiView.readStatusPedido("Cadastrar pedido");
+        StatusPedido statusEnum = StatusPedido.PENDENTE;
         String status = statusEnum.toString();
 
         try{
