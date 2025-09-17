@@ -73,15 +73,21 @@ public class ServiceCRUD {
             }
 
             case 14 ->{
-                //excluirEntrega();
+                // excluirEntrega();
+
+                // verifica se está atrasada -> não exclui as atrasadas
             }
 
             case 15 ->{
                 //excluirCliente();
+
+                // verifica se tem pedido pendente atrelado
             }
 
             case 16 ->{
                 //excluirMotorista();
+
+                // verifica se há entrega atrasada atrelada
             }
         }
 
