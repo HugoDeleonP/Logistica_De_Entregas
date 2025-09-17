@@ -63,4 +63,20 @@ public class MotoristaDao{
 
         return motoristas;
     }
+
+    public void delete(Motorista motorista){
+        String sql = """
+                DELETE FROM motorista
+                WHERE id = ?;
+                """;
+
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, motorista.getId());
+
+            System.out.println("Motorista deletado com sucesso!");
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
 }

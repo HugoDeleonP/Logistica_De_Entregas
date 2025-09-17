@@ -29,6 +29,10 @@ public class Entrega {
         this.status_entrega = status_entrega;
     }
 
+    public Entrega(Motorista motorista, int quantidadeEntrega){
+        this.motorista = motorista;
+    }
+
     public Integer getId() {
         return id;
     }

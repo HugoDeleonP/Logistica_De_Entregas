@@ -68,4 +68,20 @@ public class ClienteDao {
         }
         return clientes;
     }
+
+    public void delete(Cliente cliente){
+        String sql = """
+                DELETE FROM cliente
+                WHERE id = ?;
+                """;
+
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, cliente.getId());
+
+            System.out.println("Cliente deletado com sucesso!");
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
 }

@@ -170,4 +170,47 @@ public class EntregaDao{
         }
     }
 
+    public void delete(Entrega entrega){
+        String sql = """
+                DELETE FROM entrega
+                WHERE id = ?;
+                """;
+
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, entrega.getId());
+
+            System.out.println("Entrega deletada com sucesso!");
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public List<Entrega> totalEntregaByMotorista(){
+        String sql = """
+                select motorista.nome as nome_motorista, count(entrega.id) as quantidade_entregas
+                from entrega
+                LEFT JOIN motorista ON entrega.motorista_id = motorista.id
+                GROUP BY motorista.nome;
+                """;
+
+        List<Entrega> entregas = new ArrayList<>();
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()){
+                String nome_motorista = rs.getString("nome_motorista");
+                int quantidade_entregas = rs.getInt("quantidade_entregas");
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Entrega> totalEntregaAtrasadaByCidade(){
+        return null;
+    }
+
 }

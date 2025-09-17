@@ -1,169 +1,137 @@
-CREATE DATABASE  IF NOT EXISTS `logistica_entrega` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `logistica_entrega`;
--- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
---
--- Host: localhost    Database: logistica_entrega
--- ------------------------------------------------------
--- Server version	8.0.32
+-- Criação do banco de dados
+CREATE DATABASE IF NOT EXISTS logistica_entrega;
+USE logistica_entrega;
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+-- ======================================
+-- Tabela: cliente
+-- ======================================
+DROP TABLE IF EXISTS cliente;
 
---
--- Table structure for table `cliente`
---
+CREATE TABLE cliente (
+    id INT NOT NULL AUTO_INCREMENT,
+    nome VARCHAR(60) NOT NULL,
+    cpf_cnpj VARCHAR(20) NOT NULL,
+    endereco VARCHAR(60) NOT NULL,
+    cidade VARCHAR(60) NOT NULL,
+    estado VARCHAR(60) NOT NULL,
+    PRIMARY KEY (id)
+);
 
-DROP TABLE IF EXISTS `cliente`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cliente` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(60) NOT NULL,
-  `cpf_cnpj` varchar(20) NOT NULL,
-  `endereco` varchar(60) NOT NULL,
-  `cidade` varchar(60) NOT NULL,
-  `estado` varchar(60) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- ======================================
+-- Tabela: motorista
+-- ======================================
 
---
--- Dumping data for table `cliente`
---
+CREATE TABLE motorista (
+    id INT NOT NULL AUTO_INCREMENT,
+    nome VARCHAR(60) NOT NULL,
+    cnh VARCHAR(20) NOT NULL,
+    veiculo VARCHAR(60) NOT NULL,
+    cidade_base VARCHAR(60) NOT NULL,
+    PRIMARY KEY (id)
+);
 
-LOCK TABLES `cliente` WRITE;
-/*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-/*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
-UNLOCK TABLES;
+-- ======================================
+-- Tabela: pedido
+-- ======================================
+DROP TABLE IF EXISTS pedido;
 
---
--- Table structure for table `entrega`
---
+CREATE TABLE pedido (
+    id INT NOT NULL AUTO_INCREMENT,
+    cliente_id INT NOT NULL,
+    data_pedido DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    volume_m3 DOUBLE(8 , 2 ) NOT NULL,
+    peso_kg DOUBLE(8 , 2 ) NOT NULL,
+    status_pedido ENUM('PENDENTE', 'ENTREGUE', 'CANCELADO') NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (cliente_id)
+        REFERENCES cliente (id)
+);
 
-DROP TABLE IF EXISTS `entrega`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `entrega` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `pedido_id` int NOT NULL,
-  `motorista_id` int NOT NULL,
-  `data_saida` datetime NOT NULL,
-  `data_entrega` datetime NOT NULL,
-  `status_entrega` enum('EM_ROTA','ENTREGUE','ATRASADA') NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `pedido_id` (`pedido_id`),
-  KEY `motorista_id` (`motorista_id`),
-  CONSTRAINT `entrega_ibfk_1` FOREIGN KEY (`pedido_id`) REFERENCES `pedido` (`id`),
-  CONSTRAINT `entrega_ibfk_2` FOREIGN KEY (`motorista_id`) REFERENCES `motorista` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- ======================================
+-- Tabela: entrega
+-- ======================================
+DROP TABLE IF EXISTS entrega;
 
---
--- Dumping data for table `entrega`
---
+CREATE TABLE entrega (
+    id INT NOT NULL AUTO_INCREMENT,
+    pedido_id INT NOT NULL,
+    motorista_id INT NOT NULL,
+    data_saida DATETIME NOT NULL,
+    data_entrega DATETIME NULL,
+    status_entrega ENUM('EM_ROTA', 'ENTREGUE', 'ATRASADA') NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (pedido_id)
+        REFERENCES pedido (id),
+    FOREIGN KEY (motorista_id)
+        REFERENCES motorista (id)
+);
 
-LOCK TABLES `entrega` WRITE;
-/*!40000 ALTER TABLE `entrega` DISABLE KEYS */;
-/*!40000 ALTER TABLE `entrega` ENABLE KEYS */;
-UNLOCK TABLES;
+-- ======================================
+-- Tabela: historicoEntrega
+-- ======================================
+DROP TABLE IF EXISTS historicoEntrega;
 
---
--- Table structure for table `historicoEntrega`
---
+CREATE TABLE historicoEntrega (
+    id INT NOT NULL AUTO_INCREMENT,
+    entrega_id INT NOT NULL,
+    data_evento DATE NOT NULL,
+    descricao TEXT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (entrega_id)
+        REFERENCES entrega (id)
+);
 
-DROP TABLE IF EXISTS `historicoEntrega`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `historicoEntrega` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `entrega_id` int NOT NULL,
-  `data_evento` date NOT NULL,
-  `descricao` text NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `entrega_id` (`entrega_id`),
-  CONSTRAINT `historicoEntrega_ibfk_1` FOREIGN KEY (`entrega_id`) REFERENCES `entrega` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+SELECT * FROM pedido;
+select * from entrega;
+select * from historicoEntrega;
 
---
--- Dumping data for table `historicoEntrega`
---
+SELECT entrega.id, entrega.pedido_id, motorista.nome, data_saida, data_entrega, status_entrega
+FROM entrega
+INNER JOIN motorista ON entrega.motorista_id = motorista.id;
 
-LOCK TABLES `historicoEntrega` WRITE;
-/*!40000 ALTER TABLE `historicoEntrega` DISABLE KEYS */;
-/*!40000 ALTER TABLE `historicoEntrega` ENABLE KEYS */;
-UNLOCK TABLES;
+SELECT pedido.id, cliente.nome, pedido.data_pedido, pedido.volume_m3, pedido.peso_kg, pedido.status_pedido 
+from pedido
+INNER JOIN cliente on pedido.cliente_id = cliente.id;
 
---
--- Table structure for table `motorista`
---
+select pedido.id as pedido_id,
+                cliente.id as cliente_id,
+                cliente.cpf_cnpj as cliente_cpf_cnpj,
+                cliente.nome as cliente_nome,
+                pedido.data_pedido,
+                pedido.volume_m3,
+                pedido.peso_kg,
+                pedido.status_pedido
+                from pedido
+                LEFT JOIN cliente ON pedido.cliente_id = cliente.id
+                WHERE cliente.cpf_cnpj like '%18%';
+                
+                
+describe cliente;
+describe pedido;
+describe entrega;
+describe historicoEntrega;
+                
+-- Total de Entregas por Motorista
+select motorista.nome as nome_motorista, count(entrega.id) as quantidade_entregas
+from entrega
+LEFT JOIN motorista ON entrega.motorista_id = motorista.id
+GROUP BY motorista.nome;
 
-DROP TABLE IF EXISTS `motorista`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `motorista` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(60) NOT NULL,
-  `cnh` varchar(20) NOT NULL,
-  `veiculo` varchar(60) NOT NULL,
-  `cidade_base` varchar(60) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- Clientes com Maior Volume Entregue
+select cliente.nome as nome_cliente, max(pedido.volume_m3) as maior_volume
+FROM pedido
+LEFT JOIN cliente ON pedido.cliente_id = cliente.id
+GROUP BY nome_cliente; 
 
---
--- Dumping data for table `motorista`
---
+-- Pedidos Pendentes por Estado
+select cliente.estado as estado, count(pedido.id) as quantidade_pedidos
+FROM pedido
+LEFT JOIN cliente ON pedido.cliente_id = cliente.id
+GROUP BY cliente.estado;
 
-LOCK TABLES `motorista` WRITE;
-/*!40000 ALTER TABLE `motorista` DISABLE KEYS */;
-/*!40000 ALTER TABLE `motorista` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `pedido`
---
-
-DROP TABLE IF EXISTS `pedido`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `pedido` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `cliente_id` int NOT NULL,
-  `data_pedido` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `volume_m3` double(8,2) NOT NULL,
-  `peso_kg` double(8,2) NOT NULL,
-  `status_pedido` enum('PENDENTE','ENTREGUE','CANCELADO') NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `cliente_id` (`cliente_id`),
-  CONSTRAINT `pedido_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `cliente` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `pedido`
---
-
-LOCK TABLES `pedido` WRITE;
-/*!40000 ALTER TABLE `pedido` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pedido` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2025-09-04 16:36:40
+-- Entregas Atrasadas por Cidade
+select cliente.cidade, count(entrega.id) as quantidade_entrega
+FROM entrega
+LEFT JOIN pedido ON entrega.pedido_id = pedido.id
+	LEFT JOIN cliente ON pedido.cliente_id = cliente.id
+GROUP BY cliente.cidade;
