@@ -116,33 +116,6 @@ public class Viewer {
         return peso;
     }
 
-    public StatusPedido readStatusPedido(String titulo){
-        System.out.printf("=========================| %s |=========================\n", titulo);
-        System.out.println(" 1- PENDENTE");
-        System.out.println(" 2- ENTREGUE");
-        System.out.println(" 3- CANCELADO");
-        int escolha = input.nextInt();
-        input.nextLine();
-
-        switch (escolha){
-            case 1 ->{
-                return StatusPedido.PENDENTE;
-            }
-
-            case 2 ->{
-                return StatusPedido.ENTREGUE;
-            }
-
-            case 3 ->{
-                return StatusPedido.CANCELADO;
-            }
-
-            default ->{
-                return null;
-            }
-        }
-    }
-
     public LocalDateTime readDateTime(String titulo, String entidade){
         System.out.printf("=========================| %s |=========================\n", titulo);
         System.out.printf(" Digite a data de %s (YYYY-MM-DD): \n", entidade);
@@ -177,33 +150,6 @@ public class Viewer {
         return LocalDate.parse(dateString);
     }
 
-    public StatusEntrega readStatusEntrega(String titulo){
-        System.out.printf("=========================| %s |=========================\n", titulo);
-        System.out.println(" 1- EM_ROTA");
-        System.out.println(" 2- ENTREGUE");
-        System.out.println(" 3- ATRASADA");
-        int escolha = input.nextInt();
-        input.nextLine();
-
-        switch (escolha){
-            case 1 ->{
-                return StatusEntrega.EM_ROTA;
-            }
-
-            case 2 ->{
-                return StatusEntrega.ENTREGUE;
-            }
-
-            case 3 ->{
-                return StatusEntrega.ATRASADA;
-            }
-
-            default ->{
-                return null;
-            }
-        }
-    }
-
     public String readDescricao(String titulo, String entidade){
         System.out.printf("=========================| %s |=========================\n", titulo);
         System.out.printf(" Digite a descrição de %s: \n", entidade);
@@ -214,6 +160,12 @@ public class Viewer {
         System.err.println("=========================| ERRO |=========================");
         System.err.println(" Não foi possível realizar o registro de evento histórico.");
         System.err.println(" Cadastre uma entrega que apresente uma data que ocorreu.");
+    }
+
+    public void warnCancelamentoPedido(String operacao, String justificativa){
+        System.err.println("=========================| AVISO |=========================");
+        System.err.printf(" Não foi possível realizar %s,\n", operacao);
+        System.err.printf(" pois %s\n\n", justificativa);
     }
 
     public void warnEntregaAtrasada(){

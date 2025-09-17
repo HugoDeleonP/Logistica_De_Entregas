@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ServiceCRUD {
     List<Cliente> clientes;
@@ -68,7 +69,7 @@ public class ServiceCRUD {
             }
 
             case 13 ->{
-                //cancelarPedido();
+                cancelarPedido();
             }
 
             case 14 ->{
@@ -378,5 +379,25 @@ public class ServiceCRUD {
         else{
             uiView.warnListEmpty("pesquisa de pedido");
         }
+    }
+
+    private void cancelarPedido(){
+        var pedidoData = new PedidoDao();
+
+        listagemPedido();
+        Integer pedido_id = uiView.readId("Cancelar pedido", "a entrega");
+        Pedido pedido = listagemId_pedido(pedido_id);
+
+        if(!Objects.equals(pedido.getStatus_pedido(), StatusPedido.ENTREGUE.toString())){
+            try{
+                pedidoData.updateStatus(StatusPedido.CANCELADO.toString(), pedido.getId());
+            } catch (SQLException e){
+                e.printStackTrace();
+            }
+        } else{
+            uiView.warnCancelamentoPedido("o cancelamento do pedido", "o pedido já está entregue");
+        }
+
+
     }
 }
