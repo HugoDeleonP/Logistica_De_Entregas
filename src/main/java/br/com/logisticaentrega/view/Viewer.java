@@ -1,7 +1,6 @@
 package br.com.logisticaentrega.view;
 
-import br.com.logisticaentrega.model.StatusEntrega;
-import br.com.logisticaentrega.model.StatusPedido;
+import br.com.logisticaentrega.model.*;
 
 import javax.swing.text.DateFormatter;
 import javax.swing.text.View;
@@ -158,6 +157,17 @@ public class Viewer {
         return LocalDateTime.parse(dateTimeString);
     }
 
+    public int verifyDataEntrega(String titulo){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.println(" O cliente recebeu a entrega?");
+        System.out.println(" 1- Sim");
+        System.out.println(" 2- Não");
+        int answer = input.nextInt();
+        input.nextLine();
+
+        return answer;
+    }
+
     public LocalDate readDate(String titulo, String entidade){
         System.out.printf("=========================| %s |=========================\n", titulo);
         System.out.printf(" Digite a data de %s (YYYY-MM-DD): \n", entidade);
@@ -200,7 +210,53 @@ public class Viewer {
         return input.nextLine();
     }
 
-    public void selectClienteMotorista_entrega(){
-
+    public void errorDataEntrega_null(){
+        System.err.println("=========================| ERRO |=========================");
+        System.err.println(" Não foi possível realizar o registro de evento histórico.");
+        System.err.println(" Cadastre uma entrega que apresente uma data que ocorreu.");
     }
+
+    public void warnEntregaAtrasada(){
+        System.out.println("=========================| AVISO |=========================");
+        System.out.println(" A entrega está atrasada");
+    }
+
+    public void warnListEmpty(String operacao){
+        System.out.println("=========================| AVISO |=========================");
+        System.out.printf(" Não foi possível realizar a %s,\n", operacao);
+        System.out.println(" pois não há elemento presente na lista");
+    }
+
+    public String search(String titulo, String entidade, String coluna){
+        System.out.printf("=========================| %s |=========================\n", titulo);
+        System.out.printf(" Pesquise %s digitando o %s: ", entidade, coluna);
+        return input.nextLine();
+    }
+
+    public String clienteMotorista_toString(Entrega entrega, Cliente cliente, Motorista motorista){
+
+        return
+                "=========================| Entrega |=========================\n" +
+                "\nID: " + entrega.getId() +
+                "\nCliente: " + cliente.getNome() +
+                "\nMotorista: " + motorista.getNome() +
+                "\nData de saída: " + entrega.getData_saida() +
+                "\nData de entrega: " + entrega.getData_entrega() +
+                "\nStatus da entrega: " + entrega.getStatus_entrega() + "\n";
+    }
+
+    public String searchPedido_cpfCnpj_toString(Pedido pedido, Cliente cliente){
+
+        return
+                "=========================| Pedido |=========================\n" +
+                "\nID: " + pedido.getId() +
+                "\nCliente: " + cliente.getNome() +
+                "\nCPF/CNPJ do cliente: " + cliente.getCpf_cnpj() +
+                "\nData do pedido: " + pedido.getData_pedido() +
+                "\nVolume(m³): " + pedido.getVolume_m3() +
+                "\nPeso(Kg): " + pedido.getPeso_kg() +
+                "\nStatus do pedido: " + pedido.getStatus_pedido() + "\n";
+    }
+
+
 }

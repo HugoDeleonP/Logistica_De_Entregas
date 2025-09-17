@@ -64,7 +64,7 @@ public class ServiceCRUD {
             }
 
             case 12 ->{
-                //buscarPedidoCpfCnpj();
+                buscarPedidoCpfCnpj();
             }
 
             case 13 ->{
@@ -232,32 +232,73 @@ public class ServiceCRUD {
 
     private void cadastrarEntrega(){
         var entregaData = new EntregaDao();
+        var pedidoData = new PedidoDao();
+
+        LocalDateTime data_entrega;
+
         listagemPedido();
         Integer pedido_id = uiView.readId("Cadastrar entrega", "o pedido");
         listagemMotorista();
         Integer motorista_id = uiView.readId("Cadastrar entrega", "o motorista");
         LocalDateTime data_saida = uiView.readDateTime("Cadastrar entrega", "saída");
-        LocalDateTime data_entrega = uiView.readDateTime("Cadastrar entrega", "entrega");
-        String status = StatusEntrega.EM_ROTA.toString();
+
+        int answer = uiView.verifyDataEntrega("Cadastrar entrega");
+        Boolean verify = routerVerifyEntrega(answer);
+
+        String status_entrega;
+
+        if(Boolean.TRUE.equals(verify)){
+            data_entrega = uiView.readDateTime("Cadastrar entrega", "entrega");
+            status_entrega = StatusEntrega.ENTREGUE.toString();
+        }
+        else{
+            status_entrega = StatusEntrega.EM_ROTA.toString();
+            data_entrega = null;
+        }
 
         Pedido pedido = listagemId_pedido(pedido_id);
         Motorista motorista = listagemId_motorista(motorista_id);
         try {
-            entregaData.insert(pedido, motorista, data_saida, data_entrega, status);
+            entregaData.insert(pedido, motorista, data_saida, data_entrega, status_entrega);
         } catch (SQLException e){
             e.printStackTrace();
         }
 
     }
 
+    private Boolean routerVerifyEntrega(int answer){
+        switch (answer){
+
+            case 1 ->{
+                return true;
+            }
+
+            case 2 ->{
+                return false;
+            }
+
+            default ->{
+                return null;
+            }
+        }
+    }
+
     private void cadastrarEventoHistorico(){
         var historicoEntregaData = new HistoricoEntregaDao();
+        LocalDateTime data_evento;
 
         listagemEntrega();
         Integer entrega_id = uiView.readId("Cadastrar histórico de entrega", "a entrega");
         String descricao = uiView.readDescricao("Cadastrar histórico de entrega", "evento da entrega");
         Entrega entrega = listagemId_entrega(entrega_id);
-        LocalDateTime data_evento = entrega.getData_entrega();
+        if(entrega.getData_entrega() != null){
+            data_evento = entrega.getData_entrega();
+        }
+        else{
+            uiView.errorDataEntrega_null();
+            return;
+        }
+
 
         try{
             historicoEntregaData.insert(entrega, LocalDate.from(data_evento), descricao);
@@ -269,31 +310,44 @@ public class ServiceCRUD {
 
     private void atualizarStatusEntrega(){
         var entregaData = new EntregaDao();
+        LocalDateTime data_entrega;
+        String statusEntrega;
+
 
         listagemEntrega();
         Integer entrega_id = uiView.readId("Atualizar status de entrega", "a entrega");
-        StatusEntrega statusEnum = uiView.readStatusEntrega("Atualizar status de entrega");
-        String statusEntrega = statusEnum.toString();
+        Entrega entrega = listagemId_entrega(entrega_id);
+
+        int answer = uiView.verifyDataEntrega("Atualizar status de entrega");
+        Boolean verify = routerVerifyEntrega(answer);
+
+        if(Boolean.TRUE.equals(verify)){
+            data_entrega = uiView.readDateTime("Cadastrar entrega", "entrega");
+            statusEntrega = StatusEntrega.ENTREGUE.toString();
+            String statusPedido = StatusPedido.ENTREGUE.toString();
+            var pedidoData = new PedidoDao();
+            try {
+                pedidoData.updateStatus(statusPedido, entrega.getPedido().getId());
+            } catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+        else{
+            uiView.warnEntregaAtrasada();
+            data_entrega = null;
+            statusEntrega = StatusEntrega.ATRASADA.toString();
+        }
+
 
         try{
-            entregaData.updateStatus(entrega_id, statusEntrega);
+            entregaData.updateDataEntrega(data_entrega, entrega_id);
+            entregaData.updateStatus(statusEntrega, entrega_id);
         } catch (SQLException e){
             e.printStackTrace();
         }
 
     }
 
-    private String clienteMotorista_toString(Entrega entrega, Cliente cliente, Motorista motorista){
-
-        return
-        "=========================| Pedido |=========================\n" +
-        "\nID: " + entrega.getId() +
-        "\nCliente: " + cliente.getNome() +
-        "\nMotorista: " + motorista.getNome() +
-        "\nData de saída: " + entrega.getData_saida() +
-        "\nData de entrega: " + entrega.getData_entrega() +
-        "\nStatus da entrega: " + entrega.getStatus_entrega() + "\n";
-    }
 
     private void listarCliente_Motorista(){
         var entregaData = new EntregaDao();
@@ -303,8 +357,26 @@ public class ServiceCRUD {
             Cliente cliente = entrega.getPedido().getCliente();
             Motorista motorista = entrega.getMotorista();
 
-            System.out.println(clienteMotorista_toString(entrega, cliente, motorista));
+            System.out.println(uiView.clienteMotorista_toString(entrega, cliente, motorista));
 
+        }
+    }
+
+    private void buscarPedidoCpfCnpj(){
+        PedidoDao pedidoData = new PedidoDao();
+        String cnpj_cpf = uiView.search("Pesquisar pedido por CPF/CNPJ", "o pedido", "CPF/CNPJ do cliente");
+
+        pedidos = pedidoData.search_CpfCnpj(cnpj_cpf);
+
+        if(!pedidos.isEmpty()){
+
+            for(Pedido pedido: pedidos){
+                Cliente cliente = pedido.getCliente();
+                System.out.println(uiView.searchPedido_cpfCnpj_toString(pedido, cliente));
+            }
+        }
+        else{
+            uiView.warnListEmpty("pesquisa de pedido");
         }
     }
 }

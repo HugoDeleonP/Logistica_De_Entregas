@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +128,7 @@ public class EntregaDao{
         return entregas;
     }
 
-    public void updateStatus(Integer id, String statusEntrega) throws SQLException{
+    public void updateStatus(String status_entrega, Integer id) throws SQLException{
         String sql = """
                 UPDATE entrega
                 SET status_entrega = ?
@@ -137,10 +138,33 @@ public class EntregaDao{
         try(Connection conn = Conexao.conectar();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
-            stmt.setInt(1, id);
-            stmt.setString(2, statusEntrega);
+            stmt.setString(1, status_entrega);
+            stmt.setInt(2, id);
+
+            stmt.executeUpdate();
 
             System.out.println("Status de entrega atualizado com sucesso!");
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void updateDataEntrega(LocalDateTime data_entrega, Integer id){
+        String sql = """
+                UPDATE entrega
+                SET data_entrega = ?
+                WHERE id = ?;
+                """;
+
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            stmt.setObject(1, data_entrega);
+            stmt.setInt(2, id);
+
+            stmt.executeUpdate();
+
+            System.out.println("Data de entrega atualizada com sucesso!");
         } catch (SQLException e){
             e.printStackTrace();
         }

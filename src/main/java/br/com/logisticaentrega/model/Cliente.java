@@ -31,6 +31,12 @@ public class Cliente {
         this.nome = nome;
     }
 
+    public Cliente(Integer id, String cpf_cnpj, String nome) {
+        this.id = id;
+        this.cpf_cnpj = cpf_cnpj;
+        this.nome = nome;
+    }
+
     public Integer getId() {
         return id;
     }
