@@ -35,7 +35,7 @@ public class MotoristaDao{
         }
     }
 
-    public List<Motorista> select(){
+    public List<Motorista> select() throws SQLException{
         String sql = """
                 SELECT id, nome, cnh, veiculo, cidade_base
                 FROM motorista;
@@ -64,7 +64,7 @@ public class MotoristaDao{
         return motoristas;
     }
 
-    public void delete(Motorista motorista){
+    public void delete(Motorista motorista) throws SQLException{
         String sql = """
                 DELETE FROM motorista
                 WHERE id = ?;
@@ -74,7 +74,6 @@ public class MotoristaDao{
             PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setInt(1, motorista.getId());
 
-            System.out.println("Motorista deletado com sucesso!");
         } catch (SQLException e){
             e.printStackTrace();
         }

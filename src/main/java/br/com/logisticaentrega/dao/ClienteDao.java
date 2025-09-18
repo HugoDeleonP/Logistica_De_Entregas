@@ -37,7 +37,7 @@ public class ClienteDao {
         }
     }
 
-    public List<Cliente> select(){
+    public List<Cliente> select() throws SQLException{
         String sql = """
                     SELECT id, nome, cpf_cnpj, endereco, cidade, estado
                     FROM cliente;
@@ -69,7 +69,7 @@ public class ClienteDao {
         return clientes;
     }
 
-    public void delete(Cliente cliente){
+    public void delete(Cliente cliente) throws SQLException{
         String sql = """
                 DELETE FROM cliente
                 WHERE id = ?;
@@ -79,7 +79,6 @@ public class ClienteDao {
             PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setInt(1, cliente.getId());
 
-            System.out.println("Cliente deletado com sucesso!");
         } catch (SQLException e){
             e.printStackTrace();
         }

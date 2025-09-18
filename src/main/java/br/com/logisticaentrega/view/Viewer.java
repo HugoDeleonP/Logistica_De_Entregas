@@ -176,7 +176,18 @@ public class Viewer {
     public void warnListEmpty(String operacao){
         System.out.println("=========================| AVISO |=========================");
         System.out.printf(" Não foi possível realizar a %s,\n", operacao);
-        System.out.println(" pois não há elemento presente na lista");
+        System.out.println(" pois não há o elemento presente na lista");
+    }
+
+    public void warnDependencia(String entidadeDependente, String atributoDependente){
+        System.out.println("=========================| AVISO |=========================");
+        System.out.println(" Não foi possível realizar a exclusão,");
+        System.out.printf(" pois há dependência d%s com %s\n", entidadeDependente, atributoDependente);
+    }
+
+    public void sucessOperation(String entidade, String operacao){
+        System.out.println("=========================| SUCESSO |=========================");
+        System.out.printf("%s foi %s com sucesso!\n", entidade, operacao);
     }
 
     public String search(String titulo, String entidade, String coluna){
@@ -210,5 +221,21 @@ public class Viewer {
                 "\nStatus do pedido: " + pedido.getStatus_pedido() + "\n";
     }
 
+    public String reportTitle_toString(String tituloRelatorio){
+        return
+                "\n=========================| "+ tituloRelatorio +" |=========================\n";
+    }
+
+    public String attributeString_toString(String atributo, String variavel){
+        return atributo + ": " + variavel;
+    }
+
+    public String attributeInt_toString(String atributo, int variavel){
+        return atributo + ": " + variavel;
+    }
+
+    public String attributeDouble_toString(String atributo, double variavel){
+        return atributo + ": " + variavel;
+    }
 
 }

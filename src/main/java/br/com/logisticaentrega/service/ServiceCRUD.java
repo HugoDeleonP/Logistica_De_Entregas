@@ -64,6 +64,22 @@ public class ServiceCRUD {
                 //Listar Todas as Entregas com Cliente e Motorista
             }
 
+            case 8 ->{
+                relatorio.totalEntregaByMotorista();
+            }
+
+            case 9 ->{
+                relatorio.maiorVolumeByCliente();
+            }
+
+            case 10 ->{
+                relatorio.pedidoPendenteByEstado();
+            }
+
+            case 11 ->{
+                relatorio.totalEntregaAtrasadaByCidade();
+            }
+
             case 12 ->{
                 buscarPedidoCpfCnpj();
             }
@@ -73,19 +89,19 @@ public class ServiceCRUD {
             }
 
             case 14 ->{
-                // excluirEntrega();
+                excluirEntrega();
 
                 // verifica se está atrasada -> não exclui as atrasadas
             }
 
             case 15 ->{
-                //excluirCliente();
+                excluirCliente();
 
                 // verifica se tem pedido pendente atrelado
             }
 
             case 16 ->{
-                //excluirMotorista();
+                excluirMotorista();
 
                 // verifica se há entrega atrasada atrelada
             }
@@ -136,11 +152,10 @@ public class ServiceCRUD {
         var cliente = listagemId_cliente(id);
         double volume = uiView.readVolume("Cadastrar pedido");
         double peso = uiView.readPeso("Cadastrar pedido");
-        StatusPedido statusEnum = StatusPedido.PENDENTE;
-        String status = statusEnum.toString();
+        String statusEnum = StatusPedido.PENDENTE.toString();
 
         try{
-            pedidoData.insert(cliente, volume, peso, status);
+            pedidoData.insert(cliente, volume, peso, statusEnum);
         } catch (SQLException e){
             System.out.println("Conexão com banco de dados não realizada");
             e.printStackTrace();
@@ -151,7 +166,12 @@ public class ServiceCRUD {
 
     private void listagemCliente(){
         var clienteData = new ClienteDao();
-        clientes = clienteData.select();
+        try{
+            clientes = clienteData.select();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
 
         for (Cliente clienteUnit: clientes){
             System.out.println(clienteUnit);
@@ -160,7 +180,12 @@ public class ServiceCRUD {
 
     private void listagemPedido(){
         var pedidoData = new PedidoDao();
-        pedidos = pedidoData.select();
+        try{
+            pedidos = pedidoData.select();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
 
         for (Pedido pedidoUnit: pedidos){
             System.out.println(pedidoUnit);
@@ -169,7 +194,12 @@ public class ServiceCRUD {
 
     private void listagemMotorista(){
         var motoristaData = new MotoristaDao();
-        motoristas = motoristaData.select();
+        try{
+            motoristas = motoristaData.select();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
 
         for(Motorista motoristaUnit: motoristas){
             System.out.println(motoristaUnit);
@@ -188,7 +218,11 @@ public class ServiceCRUD {
 
     private Cliente listagemId_cliente(Integer id){
         var clienteData = new ClienteDao();
-        clientes = clienteData.select();
+        try{
+            clientes = clienteData.select();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
 
         for (Cliente clienteUnit: clientes){
             if(clienteUnit.getId() == id){
@@ -200,7 +234,12 @@ public class ServiceCRUD {
     }
     private Pedido listagemId_pedido(Integer id){
         var pedidoData = new PedidoDao();
-        pedidos = pedidoData.select();
+        try{
+            pedidos = pedidoData.select();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
 
         for (Pedido pedidoUnit: pedidos){
             if(pedidoUnit.getId() == id){
@@ -213,7 +252,12 @@ public class ServiceCRUD {
 
     private Motorista listagemId_motorista(Integer id){
         var motoristaData = new MotoristaDao();
-        motoristas = motoristaData.select();
+
+        try {
+            motoristas = motoristaData.select();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
 
         for(Motorista motoristaUnit: motoristas){
             if(motoristaUnit.getId() == id){
@@ -358,7 +402,11 @@ public class ServiceCRUD {
 
     private void listarCliente_Motorista(){
         var entregaData = new EntregaDao();
-        entregas = entregaData.selectCliente_motorista();
+        try{
+            entregas = entregaData.selectCliente_motorista();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
 
         for(Entrega entrega: entregas){
             Cliente cliente = entrega.getPedido().getCliente();
@@ -373,7 +421,12 @@ public class ServiceCRUD {
         PedidoDao pedidoData = new PedidoDao();
         String cnpj_cpf = uiView.search("Pesquisar pedido por CPF/CNPJ", "o pedido", "CPF/CNPJ do cliente");
 
-        pedidos = pedidoData.search_CpfCnpj(cnpj_cpf);
+        try{
+            pedidos = pedidoData.search_CpfCnpj(cnpj_cpf);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
 
         if(!pedidos.isEmpty()){
 
@@ -404,6 +457,110 @@ public class ServiceCRUD {
             uiView.warnCancelamentoPedido("o cancelamento do pedido", "o pedido já está entregue");
         }
 
+    }
+
+    private void excluirEntrega(){
+        // verifica se está atrasada -> não exclui as atrasadas
+        EntregaDao entregaData = new EntregaDao();
+        listagemEntrega();
+
+        Integer entrega_id = uiView.readId("Excluir entrega", "a entrega");
+        Entrega entrega = listagemId_entrega(entrega_id);
+        String statusAtrasada = StatusEntrega.ATRASADA.toString();
+
+        if(!entrega.getStatus_entrega().equals(statusAtrasada)){
+            try{
+                entregaData.delete(entrega_id);
+                uiView.sucessOperation("A entrega", "deletada");
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        } else{
+            uiView.warnDependencia("a entrega " + entrega.getId(), "o status de atraso");
+        }
+
+    }
+
+    private Cliente validacaoExclusaoCliente(Integer cliente_id){
+        PedidoDao pedidoData = new PedidoDao();
+
+        try{
+            pedidos = pedidoData.select();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        for(Pedido pedido: pedidos){
+            var cliente = pedido.getCliente();
+            String pedidoPendente = StatusPedido.PENDENTE.toString();
+            if(cliente.getId() == cliente_id){
+                if(!pedido.getStatus_pedido().equals(pedidoPendente)){
+                    return cliente;
+                }
+                else{
+                    uiView.warnDependencia("o pedido " + pedido.getId(), "o status de pendência");
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private void excluirCliente(){
+        // verifica se tem pedido pendente atrelado
+        ClienteDao clienteData = new ClienteDao();
+        listagemCliente();
+        Integer cliente_id = uiView.readId("Excluir cliente", "o cliente");
+        Cliente cliente = validacaoExclusaoCliente(cliente_id);
+
+        try{
+            clienteData.delete(cliente);
+            uiView.sucessOperation("O cliente", "deletado");
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private Motorista validacaoExclusaoMotorista(Integer motorista_id){
+        EntregaDao entregaData = new EntregaDao();
+        entregas = entregaData.select();
+
+        for(Entrega entrega: entregas){
+            Motorista motorista = entrega.getMotorista();
+            String entregaAtrasada = StatusEntrega.ATRASADA.toString();
+
+            if(Objects.equals(motorista.getId(), motorista_id)){
+                if(!entrega.getStatus_entrega().equals(entregaAtrasada)){
+                    return motorista;
+                }
+                else{
+                    uiView.warnDependencia("a entrega " + entrega.getId(), "o status de atraso");
+                }
+            }
+            else {
+                uiView.warnListEmpty("exclusão");
+            }
+        }
+
+        return null;
+    }
+
+    private void excluirMotorista(){
+        // verifica se há entrega atrasada atrelada
+        MotoristaDao motoristaData = new MotoristaDao();
+        listagemMotorista();
+        Integer motorista_id = uiView.readId("Excluir motorista", "o motorista");
+        Motorista motorista = validacaoExclusaoMotorista(motorista_id);
+
+
+        try{
+            motoristaData.delete(motorista);
+            uiView.sucessOperation("O cliente", "deletado");
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
 
     }
 }

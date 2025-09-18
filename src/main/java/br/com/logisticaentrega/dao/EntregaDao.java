@@ -3,6 +3,7 @@ package br.com.logisticaentrega.dao;
 import br.com.logisticaentrega.model.*;
 import br.com.logisticaentrega.service.ServiceCRUD;
 import br.com.logisticaentrega.util.Conexao;
+import br.com.logisticaentrega.view.Viewer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EntregaDao{
+
+    Viewer uiView = new Viewer();
 
     public void insert(Pedido pedido, Motorista motorista, LocalDateTime data_saida, LocalDateTime data_entrega, String statusEntrega) throws SQLException{
 
@@ -76,7 +79,7 @@ public class EntregaDao{
         return entregas;
     }
 
-    public List<Entrega> selectCliente_motorista(){
+    public List<Entrega> selectCliente_motorista() throws SQLException{
         String sql = """
                 select entrega.id as entrega_id,
                 cliente.nome as cliente_nome,
@@ -149,7 +152,7 @@ public class EntregaDao{
         }
     }
 
-    public void updateDataEntrega(LocalDateTime data_entrega, Integer id){
+    public void updateDataEntrega(LocalDateTime data_entrega, Integer id) throws SQLException{
         String sql = """
                 UPDATE entrega
                 SET data_entrega = ?
@@ -170,7 +173,7 @@ public class EntregaDao{
         }
     }
 
-    public void delete(Entrega entrega){
+    public void delete(Integer id) throws SQLException{
         String sql = """
                 DELETE FROM entrega
                 WHERE id = ?;
@@ -178,15 +181,14 @@ public class EntregaDao{
 
         try(Connection conn = Conexao.conectar();
             PreparedStatement stmt = conn.prepareStatement(sql)){
-            stmt.setInt(1, entrega.getId());
+            stmt.setInt(1, id);
 
-            System.out.println("Entrega deletada com sucesso!");
         } catch (SQLException e){
             e.printStackTrace();
         }
     }
 
-    public List<Entrega> totalEntregaByMotorista(){
+    public void totalEntregaByMotorista() throws SQLException{
         String sql = """
                 select motorista.nome as nome_motorista, count(entrega.id) as quantidade_entregas
                 from entrega
@@ -194,7 +196,6 @@ public class EntregaDao{
                 GROUP BY motorista.nome;
                 """;
 
-        List<Entrega> entregas = new ArrayList<>();
         try(Connection conn = Conexao.conectar();
             PreparedStatement stmt = conn.prepareStatement(sql)){
             ResultSet rs = stmt.executeQuery();
@@ -202,15 +203,41 @@ public class EntregaDao{
             while(rs.next()){
                 String nome_motorista = rs.getString("nome_motorista");
                 int quantidade_entregas = rs.getInt("quantidade_entregas");
+
+                System.out.println(uiView.attributeString_toString("Nome do motorista", nome_motorista));
+                System.out.println(uiView.attributeInt_toString("Quantidade de entregas", quantidade_entregas) + "\n");
+
+
             }
         } catch (SQLException e){
             e.printStackTrace();
         }
-        return null;
     }
 
-    public List<Entrega> totalEntregaAtrasadaByCidade(){
-        return null;
+    public void totalEntregaAtrasadaByCidade() throws  SQLException{
+        String sql = """
+                select cliente.cidade as cliente_cidade, count(entrega.id) as quantidade_entrega
+                FROM entrega
+                LEFT JOIN pedido ON entrega.pedido_id = pedido.id
+                    LEFT JOIN cliente ON pedido.cliente_id = cliente.id
+                GROUP BY cliente_cidade;
+                """;
+
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()){
+                String cliente_cidade = rs.getString("cliente_cidade");
+                int quantidade_entrega = rs.getInt("quantidade_entrega");
+
+                System.out.println(uiView.attributeString_toString("Cidade", cliente_cidade));
+                System.out.println(uiView.attributeInt_toString("Quantidade de entregas", quantidade_entrega) + "\n");
+
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
 }

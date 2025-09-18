@@ -5,6 +5,7 @@ import br.com.logisticaentrega.model.Pedido;
 import br.com.logisticaentrega.model.StatusPedido;
 import br.com.logisticaentrega.service.ServiceCRUD;
 import br.com.logisticaentrega.util.Conexao;
+import br.com.logisticaentrega.view.Viewer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PedidoDao{
+
+    Viewer uiView = new Viewer();
 
     public void insert(Cliente cliente, double volume_m3, double peso_kg, String statusPedido) throws SQLException{
         String sql = """
@@ -41,7 +44,7 @@ public class PedidoDao{
         }
     }
 
-    public List<Pedido> select(){
+    public List<Pedido> select() throws SQLException{
         String sql = """
                 select pedido.id as pedido_id,
                 cliente.nome as cliente_nome,
@@ -103,7 +106,7 @@ public class PedidoDao{
         }
     }
 
-    public List<Pedido> search_CpfCnpj(String termoPesquisa){
+    public List<Pedido> search_CpfCnpj(String termoPesquisa) throws SQLException{
         String sql = """
                 select pedido.id as pedido_id,
                 cliente.id as cliente_id,
@@ -152,5 +155,55 @@ public class PedidoDao{
         }
 
         return pedidos;
+    }
+
+    public void maiorVolumeByCliente() throws SQLException{
+        String sql = """
+                select cliente.nome as nome_cliente, max(pedido.volume_m3) as maior_volume
+                FROM pedido
+                LEFT JOIN cliente ON pedido.cliente_id = cliente.id
+                GROUP BY nome_cliente;
+                """;
+
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()){
+                String nome_cliente = rs.getString("nome_cliente");
+                double maior_volume = rs.getDouble("maior_volume");
+
+                System.out.println(uiView.attributeString_toString("Nome do cliente", nome_cliente));
+                System.out.println(uiView.attributeDouble_toString("Maior volume", maior_volume) + "\n");
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void pedidoPendenteByEstado() throws SQLException{
+        String sql = """
+                select cliente.estado as estado, count(pedido.id) as quantidade_pedidos
+                FROM pedido
+                LEFT JOIN cliente ON pedido.cliente_id = cliente.id
+                GROUP BY estado;
+                """;
+
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()){
+                String estado = rs.getString("estado");
+                int quantidade_pedidos = rs.getInt("quantidade_pedidos");
+
+                System.out.println(uiView.attributeString_toString("Estado", estado));
+                System.out.println(uiView.attributeInt_toString("Maior volume", quantidade_pedidos) + "\n");
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 }
